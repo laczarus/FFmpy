@@ -5,6 +5,7 @@ import sys
 from PyQt5.QtWidgets import (QMainWindow, QAction, QPushButton, 
 	QFileDialog, QApplication, QInputDialog, QLabel, QComboBox)
 from PyQt5.QtGui import QIcon 
+import subprocess
 
 class FFwebm(QMainWindow):
 
@@ -37,6 +38,11 @@ class FFwebm(QMainWindow):
 		self.btnsave.setShortcut("Ctrl+S")
 		self.btnsave.move(20, 250)
 		self.btnsave.clicked.connect(self.showSaveDialog)
+
+		self.btnconv = QPushButton("Convert", self)
+		self.btnconv.setShortcut("Ctrl+C")
+		self.btnconv.move(500, 250)
+		self.btnconv.clicked.connect(self.startConv)
 
 		#combobox
 		self.rotation = QComboBox(self)
@@ -74,6 +80,15 @@ class FFwebm(QMainWindow):
 		self.setFixedSize(650, 300)
 		self.setWindowTitle("FFWebM")
 		self.show()
+
+	def startConv(self):
+
+		inputFile = str(self.qlpath.text())
+		outputFile = str(self.qlsave.text())
+		scale = "scale="+str(self.qlscale.text())+":-1"
+
+		subprocess.call(["ffmpeg", "-i", ""+ inputFile +"", "-c:v", "libvpx", "-quality", "best", "-an", "-qmin", "10", "-qmax", "35", 
+				"-vf", ""+scale+"", ""+ outputFile])
 
 	def showFileDialog(self):
 
