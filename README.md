@@ -1,2 +1,2 @@
 # FFwebm
-GUI for ffmpeg, intented for webm conversion only
+GUI for ffmpeg, intended for webm conversion only
