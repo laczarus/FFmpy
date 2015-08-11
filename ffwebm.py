@@ -3,7 +3,7 @@
 
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QAction, QPushButton, 
-	QFileDialog, QApplication, QInputDialog, QLabel)
+	QFileDialog, QApplication, QInputDialog, QLabel, QComboBox)
 from PyQt5.QtGui import QIcon 
 
 class FFwebm(QMainWindow):
@@ -29,15 +29,29 @@ class FFwebm(QMainWindow):
 		self.btnto.move(20, 105)
 		self.btnto.clicked.connect(self.showInputTime2)
 
+		self.btnscale = QPushButton("Scale", self)
+		self.btnscale.move(220, 75)
+		self.btnscale.clicked.connect(self.showInputScale)
+
 		self.btnsave = QPushButton("Save as", self)
 		self.btnsave.setShortcut("Ctrl+S")
 		self.btnsave.move(20, 250)
 		self.btnsave.clicked.connect(self.showSaveDialog)
 
+		#combobox
+		self.rotation = QComboBox(self)
+		self.rotation.addItem("No Rotation")
+		self.rotation.addItem("90° Clockwise + Vertical Flip")
+		self.rotation.addItem("90° Clockwise")
+		self.rotation.addItem("90° CounterClockwise")
+		self.rotation.addItem("90° CounterClockwise + Vertical Flip")
+		self.rotation.move(220, 105)
+		self.rotation.activated[str].connect(self.onActivated)
+
 		#labels
 		self.qlpath = QLabel("", self)
-		self.qlpath.setFixedWidth(500)
-		self.qlpath.move(130, 35)
+		self.qlpath.setFixedWidth(400)
+		self.qlpath.move(130, 10)
 
 		self.qlfrom = QLabel("", self)
 		self.qlfrom.move(130,75)
@@ -46,8 +60,14 @@ class FFwebm(QMainWindow):
 		self.qlto.move(130, 105)
 
 		self.qlsave = QLabel("", self)
-		self.qlsave.setFixedWidth(500)
+		self.qlsave.setFixedWidth(400)
 		self.qlsave.move(130, 250)
+
+		self.qlscale = QLabel("", self)
+		self.qlscale.move(330, 75)
+
+		self.qlrotation = QLabel("No Rotation", self)
+		self.qlrotation.move(330, 110)
 
 		# main window
 		self.setGeometry(300, 300, 650, 300)
@@ -67,10 +87,21 @@ class FFwebm(QMainWindow):
 
 		self.qlsave.setText(str(spath))
 
+	def showInputScale(self):
+		scale = QInputDialog.getText(self, "Input Width",
+			"Enter width (i.e. 1052 for 1052px)")[0]
+
+		self.qlscale.setText(str(scale))
+
+	def onActivated(self, text):
+
+		self.qlrotation.setText(text)
+		self.qlrotation.adjustSize()
+
 	def showInputTime(self):
 
 		text, ok = QInputDialog.getText(self, "Input Time",
-			"Enter time hh:mm:ss (i.e. 1min22s = 00:01:22):")
+			"Enter time hh:mm:ss (i.e. 1min22s = 00:01:22)")
 
 		if ok:
 			self.qlfrom.setText(str(text))
@@ -78,15 +109,10 @@ class FFwebm(QMainWindow):
 	def showInputTime2(self):
 
 		text, ok = QInputDialog.getText(self, "Input Time",
-			"Enter time hh:mm:ss (i.e. 1min22s = 00:01:22):")
+			"Enter time hh:mm:ss (i.e. 1min22s = 00:01:22)")
 
 		if ok:
 			self.qlto.setText(str(text))
-
-	def collectParams(self):
-
-		mainString = "ffmpeg -i {} -c:v libvpx -quality good -cpu-used 0 -an -vf scale={}:-1 -ss {} -to {} {}"
-
 
 if __name__ == "__main__":
 
